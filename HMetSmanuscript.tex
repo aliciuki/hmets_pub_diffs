@@ -9,12 +9,14 @@
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{rotating}
+\usepackage{pgfplots}
+\pgfplotsset{width=12cm,height=20cm,compat=1.18}
 \usepackage[caption=false]{subfig}% Support for small, `sub' figures and tables
 %\usepackage[nolists,tablesfirst]{endfloat}% To `separate' figures and tables from text if required
 %\usepackage[doublespacing]{setspace}% To produce a `double spaced' document if required
 %\setlength\parindent{24pt}% To increase paragraph indentation when line spacing is doubled
 \usepackage{array}% http://ctan.org/pkg/array
-\usepackage[style=authoryear-ibid,backend=biber,bibencoding=utf8,dashed=false]{biblatex}% Manages references that are imported via \addbibresource. Notes format was also altered
+\usepackage[style=authoryear-ibid,backend=bibtex,bibencoding=utf8,dashed=false]{biblatex}% Manages references that are imported via \addbibresource. Notes format was also altered. backend=biber,
 \addbibresource{references.bib}
 \renewcommand*{\postnotedelim}{\addcolon\space}
 \DeclareFieldFormat{postnote}{#1}
@@ -33,25 +35,26 @@
 \begin{document}
 \articletype{Research Article}% Specify the article type or omit as appropriate
 \title{\huge Harvestable Metadata Services Development\\\large Analysis of Use Cases from the World Data System}
-\author{\name{Alicia Urquidi D\'iaz,\textsuperscript{a}\thanks{Corresponding author: Alicia Urquidi D\'iaz, ito-ra1@oceannetworks.ca. For other inquiries about WDS-ITO or the HMetS-WG, please contact Karen Payne, ito-director@oceannetworks.ca.}
-Robert R. Downs,\textsuperscript{b}
-Qi Xu,\textsuperscript{c}\textsuperscript{d}
-Juanle Wang,\textsuperscript{e}\textsuperscript{f} 
-Aude Chambodut,\textsuperscript{g}\textsuperscript{h}
-Liu Chuang,\textsuperscript{i}
-Sarah Reay,\textsuperscript{j}\textsuperscript{k}
+\author{\name{Alicia Urquidi D\'iaz,\textsuperscript{a}\textsuperscript{b}\thanks{Corresponding author: Alicia Urquidi D\'iaz, alicia.urquidi@utoronto.ca. For inquiries about WDS-ITO or the HMetS-WG, please contact Karen Payne, ito-director@oceannetworks.ca.}
+Robert R. Downs,\textsuperscript{c}
+Qi Xu,\textsuperscript{d}\textsuperscript{e}
+Juanle Wang,\textsuperscript{f}\textsuperscript{g}
+Aude Chambodut,\textsuperscript{h}\textsuperscript{i}
+Liu Chuang,\textsuperscript{j}
+Sarah Reay,\textsuperscript{k}\textsuperscript{l}
 Karen Payne.\textsuperscript{a}}
-\affil{\textsuperscript{a}World Data System - International Technology Office, Canada; 
-\textsuperscript{b}NASA Socioeconomic Data and Applications Center, United States; 
-\textsuperscript{c}National Space Science Data Center, China;
-\textsuperscript{d}National Space Science Center, Chinese Academy of Sciences;
-\textsuperscript{e}WDC-Renewable Resources and Environment, China;
-\textsuperscript{f}Institute of Geographic Sciences and Natural Resources Research, Chinese Academy of Sciences;
-\textsuperscript{g}International Service of Geomagnetic Indices;
-\textsuperscript{h}Centre de Donn\'ees astronomiques de Strasbourg, France;
-\textsuperscript{i}Global Change Data Publishing and Repository, China;
-\textsuperscript{j}WDC-Geomagnetism (Edinburgh), UK;
-\textsuperscript{k}INTERMAGNET.}}
+\affil{\textsuperscript{a}World Data System - International Technology Office, Canada;
+\textsuperscript{b}Scholars Portal, Canada; 
+\textsuperscript{c}NASA Socioeconomic Data and Applications Center, United States; 
+\textsuperscript{d}National Space Science Data Center, China;
+\textsuperscript{e}National Space Science Center, Chinese Academy of Sciences;
+\textsuperscript{f}WDC-Renewable Resources and Environment, China;
+\textsuperscript{g}Institute of Geographic Sciences and Natural Resources Research, Chinese Academy of Sciences;
+\textsuperscript{h}International Service of Geomagnetic Indices;
+\textsuperscript{i}Centre de Donn\'ees astronomiques de Strasbourg, France;
+\textsuperscript{j}Global Change Data Publishing and Repository, China;
+\textsuperscript{k}WDC-Geomagnetism (Edinburgh), UK;
+\textsuperscript{l}INTERMAGNET.}}
 \maketitle
 %The "\thanks" command may be used to create additional footnotes to the title or authors' names if required. 
 
@@ -66,42 +69,94 @@ Metadata harvesting, metadata for discovery, World Data System, metadata catalog
 \end{keywords}
 
 \section{Introduction}\label{intro}
-As the importance of reusing data is increasingly recognized across disciplines, data repositories have proliferated to meet the demand, with the number of data repositories registered in re3data growing rapidly \parencite{culina_navigating_2018}. As each data repository offers additional open data products, finding a particular dataset of interest becomes challenging for potential data users \parencite{kramer_data_2018, plante_implementing_2021}. A recognized approach to address this challenge is for repositories to establish capabilities for harvesting metadata to facilitate searchability and global discoverability \parencite{culina_navigating_2018, plante_implementing_2021, wu_data_2019}.
+Harvestable metadata services are an effective, established and widely-used approach to promoting data discovery and sharing across broad communities of potential data users, across multiple disciplines \parencite{lokers_analysis_2016, valentine_earthcube_2020}. For the purpose of this study, we understand harvestable metadata as \emph{a set of metadata records in a standardized format and schema that is shared with aggregation services by means of specific protocols for metadata transfer, which are also standardized}. In this paper, we describe examples of ongoing and successful implementations of harvestable metadata services, which apply emerging and established standards and community practices to fit local and domain-specific research data management contexts. These use cases originated from the Harvestable Metadata Services Working Group (HMetS-WG)\endnote{The group was led by the International Technology Office\endnote{WDS-ITO, \href{https://wds-ito.org}{https://wds-ito.org}.} of the International Science Council's (ISC) World Data System (WDS).}, which met in a series of working sessions over 6 months during 2020. The study aims to give an overview of the infrastructures, standards and communities of the members of the WG, as well as engaging in a wider-ranging discussion of challenges that repository managers may face in developing data services such as harvestable metadata.
 
-The adherence to shared standards and community practices is a key tenet for successful digital research infrastructure (DRI) integration and interoperability \parencite{dietze_iterative_2018, yu_coevolution_2021, waide_demystifying_2017}. In support of DRI integration, this paper describes a varied set of examples of ongoing and successful implementations of harvestable metadata services that apply emerging and established standards and community practices to fit local and domain-specific research data management contexts. This scholarly output reflects the work carried out by the Harvestable Metadata Services Working Group (HMetS-WG) in a series of working sessions over 6 months during 2020. The group was led by the International Technology Office \endnote{WDS-ITO, \href{https://wds-ito.org}{https://wds-ito.org}} of the International Science Council's (ISC) World Data System (WDS). It is both an overview of the infrastructures, standards and communities of the members of the WG, as well as a wider ranging discussion of challenges faced by repository managers
+Designed as a qualitative study, this paper explores the issues surrounding the implementation of harvestable metadata services. We start with a description of use cases, with a focus on each repository's technical features, along with the challenges encountered in pursuit of self-defined and community-oriented service development goals. Repositories are also characterized by the subject and disciplinary areas covered, targeted user groups, and services offered. The full-length profiles for each platform are available as a separate publication \parencite{urquidi_diaz_harvestable_2022}. After examining the use cases within the context of the current literature on best practices for metadata syndication and pathways toward interoperability, we present a set of lessons learned from the experiences reported by the repositories in this study. These experiences involved making decisions about which technologies to develop for an often heterogeneous dynamic user base, within an evolving technological landscape, in order to implement data and metadata services that fit within the resource and policy constraints of the repository.
 
-Designed as a qualitative study, this paper explores the issues surrounding the implementation of harvestable metadata services. We start with a description of use cases, with a focus on each repository's technical features, along with the challenges encountered in pursuit of self-defined and community-oriented service development goals. Repositories are also characterized by the subject and disciplinary areas covered, targeted user groups, and services offered. The full-length profiles for each platform are available as a separate publication \parencite{urquidi_diaz_harvestable_2022}. After examining the uses cases within the context of the current literature on best practices for metadata syndication and pathways toward interoperability, we present a set of lessons learned from the experiences reported by the repositories in this study. These experiences involved making decisions about which technologies to develop for an often heterogeneous dynamic user base, within an evolving technological landscape, in order to implement data and metadata services that fit within the resource and policy constraints of the repository.
+\subsection*{Metadata harvesting, standards and protocols}\label{subintro}
+In a typical metadata sharing process, a research data repository will share a catalogue of assets: a collection metadata records that describe each dataset, typically via a search interface on the repository's portal. The repository may also share a set of standardized metadata records via additional access points (or harvestable metadata services), using a metadata transfer protocol through which aggregation services, such as harvesters, obtain the metadata (see Fig. \ref{image-harvesting}). Permanent links to data landing pages at the host repository are typically contained in those records. An aggregator may then convert (re-format or cross-walk) the acquired records into a unified display standard, to be disseminated by means of a federated metadata catalogue or a federated search engine. Examples of metadata harvesters that target research data include the Canadian Federated Research Data Repository (FRDR),\endnote{Federated Research Data Repository (FRDR), \href{https://www.frdr-dfdr.ca/repo/.}{https://www.frdr-dfdr.ca/repo/}.} and B2FIND (Europe).\endnote{EUDAT Collaborative Data Infrastructure - B2FIND, \href{https://eudat.eu/services/b2find}{https://eudat.eu/services/b2find}.}
+
+The adherence to shared standards and community practices is a key tenet for successful digital research infrastructure (DRI) integration and interoperability \parencite{dietze_iterative_2018, yu_coevolution_2021, waide_demystifying_2017}. Common standards for harvestable metadata include the Dublin Core \parencite{dcmi_dublin_2020}, DataCite \parencite{datacite_metadata_working_group_datacite_2019} and ISO 19115 \parencite{iso_iso_2019} metadata schemas, as well as transfer protocols such as OAI-PMH \parencite{lagoze_open_2015} and OGC-CSW \parencite{nebert_ogc_2016}. Metadata records are usually transferred as eXtensible Markup Language (XML) or JavaScript Object Notation (JSON, and JSON-LD, for linking data within semantic metadata) files.  Another approach to syndicating metadata uses semantic metadata tags, such as Schema.org,\endnote{Schema.org, \href{https://schema.org/}{https://schema.org/}.} that are placed in the HTML of dataset landing pages on a repository's web portal, or in separate metadata files. This strategy relies on web crawlers (such as Google) parsing the semantic metadata to aggregate and index the landing pages for search engine retrieval. Even though this approach to metadata sharing can complement harvestable metadata services, the semantic strategy was not tackled by the HMetS-WG. Instead, WDS-ITO engaged members of various communities in a separate initiative to develop semantic metadata using Schema.org \parencite{payne_how_2022}.
+
+As the importance of reusing data is increasingly recognized across disciplines, data repositories have proliferated to meet this demand, with the number of data repositories listed in registries such as re3data\endnote{The Registry of Reserarch Data Repositories, \href{https://www.re3data.org/}{https://www.re3data.org/}, is a global registry of of research data repositories.} growing rapidly \parencite{culina_navigating_2018}. As each data repository offers additional open data products, finding a particular dataset of interest becomes challenging for potential data users \parencite{kramer_data_2018, plante_implementing_2021}. A recognized approach to address this challenge is for repositories to establish capabilities for harvesting metadata to facilitate searchability and global discoverability \parencite{culina_navigating_2018, plante_implementing_2021, wu_data_2019}. Furthermore, the availability of harvestable metadata is an indicator of dataset findability \parencite{coretrustseal_coretrustseal_2019, fair_data_maturity_model_wg_fair_2020} and a measure of repository TRUST-worthiness because it entails better integration with the wider data management community \parencite[3]{lin_trust_2020}.
 
 \begin{figure}
 \centering
 \includegraphics[width=1\columnwidth]{BeingFound_Repository.png}
 \caption{The metadata harvesting process. Standardized metadata is harvested from repository catalogues, then processed, by an aggregation service. The service disseminates the metadata records through a search and discovery portal, and/or by serving it to further aggregation services for distribution.} \label{image-harvesting}
 \end{figure}
-\subsection*{Metadata harvesting, standards and protocols}\label{intro-harvesting}
- Harvestable metadata services are an effective, established and widely-used approach to data discovery and data sharing. Producing harvestable metadata is often the first step repositories take in their maturation away from locally held data and metadata. It enables descriptions of a repository’s data holdings to be incorporated into searchable indexes and catalogues aggregated from multiple data providers and fosters discovery of the data by broader communities of potential users across disciplines \parencite{lokers_analysis_2016, valentine_earthcube_2020}. Furthermore, the availability of harvestable metadata is an indicator of dataset findability \parencite{coretrustseal_coretrustseal_2019, fair_data_maturity_model_wg_fair_2020} and a measure of repository TRUST-worthiness because it entails better integration with the wider data management community \parencite[3]{lin_trust_2020}. 
-
-Harvestable metadata is a set of metadata records in a standardized format and schema that is shared with aggregation services by means of specific protocols for metadata transfer, which are also standardized. Common standards for harvestable metadata include the Dublin Core \parencite{dcmi_dublin_2020}, DataCite \parencite{datacite_metadata_working_group_datacite_2019} and ISO 19115 \parencite{iso_iso_2019} metadata schemas, as well as transfer protocols such as OAI-PMH \parencite{lagoze_open_2015} and OGC-CSW \parencite{nebert_ogc_2016}. Metadata records are usually transferred as eXtensible Markup Language (XML) or JavaScript Object Notation (JSON, and JSON-LD, for linking data within semantic metadata) files. 
-
-In a typical metadata sharing process, a research data repository will share a catalogue of assets: a collection metadata records that describe each dataset, typically via a search interface on the repository's portal. The repository may also share a set of standardized metadata records via additional access points (or harvestable metadata services), using a metadata transfer protocol through which aggregation services, such as harvesters, obtain the metadata (see Fig. \ref{image-harvesting}). Permanent links to data landing pages at the host repository are typically contained in those records. An aggregator may then convert (re-format or cross-walk) the acquired records into a unified display standard, to be disseminated by means of a federated metadata catalogue or a federated search engine. Examples of metadata harvesters that target research data include the Canadian Federated Research Data Repository (FRDR),\endnote{Federated Research Data Repository (FRDR), \href{https://www.frdr-dfdr.ca/repo/.}{https://www.frdr-dfdr.ca/repo/}.} and B2FIND (Europe).\endnote{EUDAT Collaborative Data Infrastructure - B2FIND, \href{https://eudat.eu/services/b2find}{https://eudat.eu/services/b2find}.}
-
-Another approach to syndicating metadata uses semantic metadata tags, such as Schema.org,\endnote{Schema.org, \href{https://schema.org/}{https://schema.org/}.} that are placed in the HTML of dataset landing pages on a repository's web portal, or in separate metadata files. This strategy relies on web crawlers (such as Google) parsing the semantic metadata to aggregate and index the landing pages for search engine retrieval. Even though this approach to metadata sharing can complement harvestable metadata services, the semantic strategy was not tackled by the HMetS-WG. Instead, WDS-ITO engaged members of various communities in a separate initiative to develop semantic metadata using Schema.org \parencite{payne_how_2022}.
 
 \section{Research Methodology}\label{method}
+The study's methodology included both top-down and bottom-up approaches to data collection and analysis. The focus of the Harvestable Metadata Services Working Group was on exposing the metadata assets of the WDS community, and its main goals were to facilitate WDS repository maturation through support for harvestable metadata services development, and an increase in findable and accessible data from WDS members. The Working Group was conceived as "a community-driven, multidisciplinary platform where WDS Members can interact, collaborate, and share their good practices, approaches, and pain-points associated with creating harvestable metadata services. The intent is to first identify the issues that are preventing WDS Members from exposing their metadata assets, create a scope of work detailing the issues identified, then create and follow through with an implementation plan to create publically harvestable metadata services using common and well established protocols." \parencite{}
 
-\subsection*{Data Collection}\label{data}
-In September 2019, the WDS-ITO invited WDS members to participate in the HMetS-WG and to (optionally) serve as use cases for the study. The invitation was sent to 35 unique WDS member organizations that had previously expressed interest in being informed about new WDS initiatives. Nine repositories participated in the group, and seven (Table \ref{table-subjects}) were adopted as use cases.
 
-The group's agenda was arranged according to a workflow structure proposed by WDS-ITO (Fig. \ref{flowchart}), which represents harvestable metadata services development as a set of discrete, successive steps. The repositories described their current features and the steps in the development workflow. Following the WG sessions, WDS-ITO summarized the infrastructure descriptions into detailed repository profiles \parencite{urquidi_diaz_harvestable_2022} that offer detailed insight into the nature of the challenges encountered, common themes that were shared across different contexts, and the ways in which such challenges were addressed by repositories with distinct characteristics and circumstances. Tables \ref{table-subjects}, \ref{summaryI}, and \ref{summaryII} give a summary overview of the repositories studied.
+Deliverables and Milestones
+
+The Harvestable Metadata Services WG aims to help participants to:
+
+    Determine if they want to create an implementation plan to create a harvestable metadata service, and if so
+    Examine the current state of their metadata and metadata delivery options.
+    Work with colleagues to write a scope of work that will enable them to create a harvestable metadata service.
+    Include some sort of consumption benchmark in the plans, a metric of how much metadata and data they are currently serving—the 'hits' their data is getting—and a method to compare this number against the amount of metadata and data they are serving, or the clients they are reaching after implementing a harvestable metadata service.
+    Include consumption options in the plans—a list of which harvesters they can support.
+    Collectively gather all of the use cases, identify common pain-points and lessons learned, and publish as guidance for the wider Research Data Management community who are facing the same challenges.
+    Support participants in their implementation and where necessary, seek additional expertise and resources to support WG member implementation.
+
+
+
+By the end of this 24-month WG period, there will be:
+
+    An acceleration in the maturation of less advanced WDS communities, and the emergence of a global community supporting scientific data services.
+    An explicit understanding of the barriers to metadata service deployment in a variety of contexts and settings.
+    An increase in WDS Members with harvestable metadata services, and by extension, more findable and accessible data. This will increase the global standing of WDS as an integral part of international collaborative scientific research.
+    Users and consumers of these services accessing data that was previously unavailable.
+
+
+
+In September 2019, the WDS-ITO invited WDS members to participate in the HMetS-WG and to (optionally) serve as use cases for the study. The invitation was sent to 35 unique WDS member organizations that had previously expressed interest in being informed about new WDS initiatives. Nine repositories participated in the group, and seven (Table \ref{table-subjects}) were adopted as use cases. 
+
+The group's work agenda was initially guided by a workflow structure proposed by WDS-ITO (Fig. \ref{flowchart}), which represents harvestable metadata services development as a set of discrete, successive steps. As the group progressed, WDS-ITO provided members with an enhanced package of resources, which included a Harvestable Metadata Services Implementation Plan template \parencite{urquidi_diaz_template_2021}. This resource borrowed heavily from the CESSDA-Saw guidance package \parencite{bornatici_cessda_2017} and JISC project plan templates \parencite{jisc_jisc_2011} for data service planningm, which were designed to be adapted to specific use cases—to a single service or subset of services (such as harvestable metadata services)—and include guidance on drafting implementation plans for these services. Supporting information resources in this package also included a Twine interactive narrative/storyfied walk-through of the implementation plan flow-chart \parencite{li_interactive_2021}, and a Zotero library with references to other digital resources related to harvestable metadata services \parencite{urquidi_diaz_zotero1_2021, urquidi_diaz_zotero2_2021}. 
+
+\subsection*{Data Collection}\label{data_collection}
+In the first few sessions, repositories were asked to present an overview of their infrastructure, data holdings, and services. All participating repositories provided the group with a schematic overview of their features and three repositories (NSSDC, INTERMAGNET and SEDAC) completed the implementation plan template and shared ith with WDS-ITO. 
+
+
+
+
+
+\subsection*{Data Processing and Analysis}\label{data_processing}
+
+
+We used the sources of information mentioned above in section \ref{data_collection} to complile detailed repository profiles that were published separately on Zenodo as supplementary materials \parencite{urquidi_diaz_harvestable_2022}. Wherever available, the summary profiles reference repositories' technical documentation and other relevant publications. 
+
+The following sections were covered:
+
+\begin{enumerate}
+\item Institutional overview: Brief description of the repository's institutional context: Its governance, history, mandate, mission, memberships, and other organizational features.
+\item User community: Target communities for repository services.
+\item Infrastructure overview: Description of repository's data holdings and technical infrastructure for service provision.
+\item Current state of metadata: Metadata formats, standards used, and metadata services (if any).
+\item Planned development: Plans for future development.
+\item Resources: Description of repositories' sources of support and financing.
+\item Challenges: Initially, each repository described the challenges they have faced in developing harvestable metadata and other data services on their platforms.
+\end{enumerate}
+
+Table \ref{summary} presents some basic facts about each repository, and Table \ref{table-subjects} describes the subject areas covered by the data collections and the target user groups for each repository.
 
 \begin{figure}
 \centering
 \includegraphics[width=1\columnwidth]{flowchart.jpg}
-\caption{Flow-chart diagram of a typical harvestable metadata services implementation plan \parencite{payne_steps_2020}. This diagram gives a schematic representation of the steps involved in creating a plan. The HMetS-WG used these steps to scaffold the group's work.} \label{flowchart}
+\caption{Flow-chart diagram of a typical harvestable metadata services implementation \parencite{payne_2021}. This diagram gives a schematic representation of the steps involved in creating a harvestable metadata service. The HMetS-WG used these steps to scaffold the group's initial work.} \label{flowchart}
 \end{figure}
+
+In section \ref{data_processing} we described the process through which the individual repository profiles were put together from varied sources of information, including WG members' own extensive contributions. After those profiles had been completed, the group gathered to identify the common threads and challenges reported in the uses cases, and possible approaches to tackling those challenges were explored. These discussions took place during synchronous Zoom meetings that were facilitated by WDS-ITO.
+
+In one session, the group analyzed the challenge statements that were reported in each of the individual use cases. In a first step, the group used colours to propose categories into which the original statements could be synthesized (see Figure \ref{challenges-sorting} for an illustration of this coding exercise). Through further analysis and discussion the group identified three major overarching themes, or common sources, for the challenges reported: changing user needs, sustainability, and evolving technologies. 
+
 
 \section{The HMetS-WG Set of Use Cases}\label{use-cases}
 \subsection{Repositories participating in the working group}\label{participants}
-The participating institutions (see Table \ref{table-institutions}) were based in China, the UK, the US, and France. Seven repositories were Regular\endnote{``[O]rganizations that are data stewards and/or data analysis services (e.g., data centres and services that support scientific research by holding and providing data or data products).'' \parencite{wds_scientific_committee_icsu-wds_2016}.} Members of WDS and two were Network\endnote{``[U]mbrella bodies representing groups of data stewardship organizations and/or data analysis services, some of which may or may not be WDS Regular Members” who “usually serve as coordinating agents for nodes that have common characteristics and mostly common disciplines.'' \parencite{wds_scientific_committee_icsu-wds_2016}.} Members.
+The participating institutions (see Table \ref{table-institutions}) were based in China, the UK, the US, and France. Seven repositories were Regular\endnote{``[O]rganizations that are data stewards and/or data analysis services (e.g., data centres and services that support scientific research by holding and providing data or data products).'' \parencite{wds_scientific_committee_icsu-wds_2016}.} Members of WDS and two were Network\endnote{``[U]mbrella bodies representing groups of data stewardship organizations and/or data analysis services, some of which may or may not be WDS Regular Members” who “usually serve as coordinating agents for nodes that have common characteristics and mostly common disciplines.'' \parencite{wds_scientific_committee_icsu-wds_2016}.} Members. 
 
 \begin{table}
 \tbl{HMetS-WG attendees, with WDS membership type and host institutions.}
@@ -146,7 +201,7 @@ WDC-RRE & Earth sciences, Geography, Environmental studies and forestry, Natural
 \endgroup
 
 \subsection{Repository features}\label{features}
-Tables \ref{summaryI} and \ref{summaryII} give an overview of each repository's technical features: the type of repository platform and catalogue service used, metadata standards and protocols, any added services, and a list of any current, known aggregators of their metadata assets. Figure \ref{wds-survey} presents the metadata exchange protocols utilized by the repositories studied, in the context of those of the larger WDS membership (as surveyed in 2019 by WDS-ITO \parencite{payne_world_2020}). Relative to WDS members previously surveyed, our use cases have (or plan to develop) more OGC-CSW and Opensearch, and fewer OAI-PMH services. It also must be noted that the earlier WDS member survey data does not distinguish between protocols residing within repositories and those that are provided by aggregators who disseminate metadata on behalf of repositories (e.g. EOSDIS or GEOSS).
+Table \ref{summary} gives an overview of each repository's technical features: the type of repository platform and catalogue service used, metadata standards and protocols, any added services, and a list of any current, known aggregators of their metadata assets. Figure \ref{wds-survey} presents the metadata exchange protocols utilized by the repositories studied, in the context of those of the larger WDS membership (as surveyed in 2019 by WDS-ITO \parencite{payne_world_2020}). Relative to WDS members previously surveyed, our use cases have (or plan to develop) more OGC-CSW and Opensearch, and fewer OAI-PMH services. It also must be noted that the earlier WDS member survey data does not distinguish between protocols residing within repositories and those that are provided by aggregators who disseminate metadata on behalf of repositories (e.g. EOSDIS or GEOSS).
 
 \subsubsection{Participation in research data networks}
 As we shall see below, it appears that participation in national, regional, as well as subject-specific networks has generally shaped repositories' infrastructure, particularly the ways in which their adoption of harvestable metadata services has developed or will be developed in the near future.
@@ -157,48 +212,85 @@ All studied repositories have been guided or supported by a larger entity while 
 \setlength{\tabcolsep}{6pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.5} % Default value: 1
 \begin{sidewaystable}
-\tbl{Use Case Infrastructures: Summary of Features (I)}
-{\begin{tabular}{p{0.13\linewidth} p{0.21\linewidth} p{0.21\linewidth} p{0.21\linewidth} p{0.21\linewidth}}\\
-& GCdataPR & IGS & INTERMAGNET/WDC-Geomagnetism (Edinburgh) & ISGI\\\hline
-Repository platform \newline \& catalogue & Custom & Catalogue via NASA CMR \newline \emph{- State-of-the-art IGS data discovery platform in development} & Custom repository with some datasets on GFZ Potsdam's data repository & Custom \newline \emph{- Public access metadata service}\\
-Metadata standards & DCI\endnote{Data Citation Index, \href{https://clarivate.com/webofsciencegroup/solutions/webofscience-data-citation-index/}{https://clarivate.com/webofsciencegroup/solutions/webofscience-data-citation-index/}.}, DataCite & DIF 10, ECHO 10, ISO 19115-2:2009 (MENDS and SMAP dialects), UMM-C & Via INTERMAGNET: IAGA2002, CDF; Via GFZ: GeoJSON, DataCite, ISO 19115 & IAGA2002 \newline \emph{- CERIF, DataCite and/or DCAT based profiles and/or crosswalks}\\
-Metadata service protocols & OpenSearch & CMR CSW, CMR public APIs, OpenSearch & Via homepage: HTTP, FTP; Via GFZ: request to DataCite's API & 
-Via homepage: HTTP; request to DataCite’s API\\
-Added services & Real-time usage statistics & \emph{- In development} & none reported & none reported\\
-Known aggregators & CrossRef, China-GEOSS, China National Knowledge Infrastructure (CNKI), DCI (metadata shared via email) & via NASA's CMR & DataCite, FIDGEO\endnote{Specialized Information Service for Geosciences, \href{https://www.fidgeo.de/en/fid-geo-en/}{https://www.fidgeo.de/en/fid-geo-en/}.} & none reported\\
+\tbl{Use Case Infrastructures: Summary of Features}
+{\begin{tabular}{p{0.105\linewidth} p{0.15\linewidth} p{0.165\linewidth} p{0.16\linewidth} p{0.10\linewidth} p{0.16\linewidth} }\\\hline
+& Repository platform\newline \& catalogue & Metadata standards & Metadata service protocols & Added services & Known aggregators\\\hline
+GCdataPR & Custom & DCI\endnote{Data Citation Index, \href{https://clarivate.com/webofsciencegroup/solutions/webofscience-data-citation-index/}{https://clarivate.com/webofsciencegroup/solutions/webofscience-data-citation-index/}.}, DataCite & OpenSearch & Real-time usage statistics & CrossRef, China-GEOSS, China National Knowledge Infrastructure (CNKI), DCI (metadata shared via email)\\
+IGS & Catalogue via NASA CMR \newline \emph{- State-of-the-art IGS data discovery platform in development} & DIF 10, ECHO 10, ISO 19115-2:2009 (MENDS and SMAP dialects), UMM-C & CMR CSW, CMR public APIs, OpenSearch & \emph{- In development} & via NASA's CMR\\
+INTERMAGNET & Custom repository with some datasets on GFZ Potsdam's data repository & Via INTERMAGNET: IAGA2002, CDF; Via GFZ: GeoJSON, DataCite, ISO 19115 & Via homepage: HTTP, FTP; Via GFZ: request to DataCite's API & none reported & DataCite, FIDGEO\endnote{Specialized Information Service for Geosciences, \href{https://www.fidgeo.de/en/fid-geo-en/}{https://www.fidgeo.de/en/fid-geo-en/}.}\\
+ISGI & Custom \newline \emph{- Public access metadata service} & IAGA2002 \newline \emph{- CERIF, DataCite and/or DCAT based profiles and/or crosswalks} & Via homepage: HTTP; request to DataCite’s API & none reported\\
+NSSDC & Custom & NSSDC Core Metadata Specification, SPASE \newline \emph{- DataCite, VO Data model} \newline \emph{- DataCite-NSSDC schema compatibility} & OpenSearch, OGC-CSW (via WDS China), Data search platform, \newline \emph{- OAI-PMH} & DOI, Handle, CSTR IDs \newline \emph{- Metadata registration service} & National Science and Technology Data Sharing Network of China, Scientific Data Center of Chinese Academic of Sciences\\
+SEDAC & Vital Digital Asset Management System (Fedora) \newline \emph{- Migration to Drupal 8 underway} & FGDC CSDGM, ISO19115, DataCite & International Data Network's OGC CSW, NASA's CMR CSW, CMR public APIs, OpenSearch & none reported & DataCite, GEOSS (via EOSDIS/CMR)\\
+WDC-RRE & Custom: Debian OS, OSS NGNIX, PostgreSQL, TorCMS & Dublin Core, ISO 19115, WDC-RRE’s Data Identification and Metadata standards \newline \emph{- New metadata specification planned} & OpenSearch, OGC-CSW 3.0.0, OAI-PMH 2.0, SRU 1.1., \newline \emph{- Geonetwork} & PID versioning for dynamic datasets & WDS-China, CNKI\\
 \bottomrule
 \end{tabular}}
-\tabnote{\textsuperscript{a}Features given in \emph{italics} are planned or currently in development.} 
-\label{summaryI}
-\end{sidewaystable}
-\endgroup
-
-\begingroup
-\setlength{\tabcolsep}{6pt} % Default value: 6pt
-\renewcommand{\arraystretch}{1.5} % Default value: 1
-\begin{sidewaystable}
-\tbl{Use Case Infrastructures: Summary of Features (II)}
-{\begin{tabular}{p{0.14\linewidth} p{0.22\linewidth} p{0.22\linewidth} p{0.22\linewidth}}\\
-& NSSDC & SEDAC & WDC-RRE\\\hline
-Repository platform \newline \& catalogue & Custom & Vital Digital Asset Management System (Fedora) \newline \emph{- Migration to Drupal 8 underway} & Custom: Debian OS, OSS NGNIX, PostgreSQL, TorCMS \\
-Metadata standards & NSSDC Core Metadata Specification, SPASE \newline \emph{- DataCite, VO Data model} \newline \emph{- DataCite-NSSDC schema compatibility} & FGDC CSDGM, ISO19115, DataCite & Dublin Core, ISO 19115, WDC-RRE’s Data Identification and Metadata standards \newline \emph{- New metadata specification planned}\\
-Metadata service protocols & OpenSearch, OGC-CSW (via WDS China), Data search platform, \newline \emph{- OAI-PMH} & International Data Network's OGC CSW, NASA's CMR CSW, CMR public APIs, OpenSearch & OpenSearch, OGC-CSW 3.0.0, OAI-PMH 2.0, SRU 1.1., \newline \emph{- Geonetwork}\\
-Added Services & PIDs: DOI, Handle, CSTR IDs \newline \emph{- Metadata registration service}& none reported & PID versioning for dynamic datasets\\
-Known aggregators &  National Science and Technology Data Sharing Network of China, Scientific Data Center of Chinese Academic of Sciences  & DataCite, GEOSS (via EOSDIS/CMR) & WDS-China, CNKI\\
-\bottomrule
-\end{tabular}}
-\tabnote{\textsuperscript{a}Features given in \emph{italics} are planned or currently in development.} 
-\label{summaryII}
+\tabnote{\textsuperscript{i}Features given in \emph{italics} are planned or currently in development.;\newline \textsuperscript{ii}This use case includes both INTERMAGNET and its host organization, WDC-Geomagnetism (Edinburgh)} 
+\label{summary}
 \end{sidewaystable}
 \endgroup
 
 \begin{figure}
 \centering
-\subfloat[Harvesting protocols reported by HMetS-WG repositories]{%
-\resizebox*{10 cm}{!}{\includegraphics{HMetSProtocols.jpg}}}\hspace{5pt}
-\subfloat[Harvesting protocols reported by WDS repositories]{%
-\resizebox*{10 cm}{!}{\includegraphics{WDSProtocols.jpg}}}
-\caption{These figures compare the metadata harvesting protocols reported by the HMetS-WG repositories with those reported by WDS repositories in a 2019 member survey \parencite[11, 15]{payne_world_2020}. Because some repositories reported serving their metadata \emph{via} third-party services, we have included those services as well (e.g. DataCite, EOSDIS, etc.). } \label{wds-survey}
+\textbf{Metadata aggregation and syndication mechanisms\\ reported by WDS and HMetS-WG members}\par\medskip
+% Bar charts - uses package pgfplots
+% Author: Stefan Kottwitz
+% https://www.packtpub.com/hardware-and-creative/latex-cookbook
+\begin{tikzpicture}
+\pgfplotbarshift
+  \begin{axis}[
+   xbar = 0pt,
+   ylabel = Mechanism,
+   xlabel = Responses (\% of total in group), 
+xmin=0,xmax=26,
+symbolic y coords = {EPN-TAP,ERDDAP,OpeNDAP,SolR,THREDDS,Unspecified API,via Nesstar,REST API,via DataCite,OpenSearch,via EOSDIS,via Geonetwork,WAF,Web interface,HTTP*,OGC-CSW,OAI-PMH,FTP,SRU 1.1},
+bar width=8pt,
+ymin = {[normalized]0}, ymax = {[normalized]18},
+enlargelimits = 0.03,
+y axis line style = { opacity = 0 },
+x axis line style = { opacity = 0 }
+]
+\addplot coordinates {(1.041666667,EPN-TAP)
+(1.041666667,ERDDAP)
+(1.041666667,OpeNDAP)
+(1.041666667,SolR)
+(1.041666667,THREDDS)
+(2.083333333,Unspecified API)
+(2.083333333,via Nesstar)
+(3.125,REST API)
+(4.166666667,via DataCite)
+(5.208333333,OpenSearch)
+(5.208333333,via EOSDIS)
+(6.25,via Geonetwork)
+(6.25,WAF)
+(8.333333333,Web interface)
+(10.41666667,HTTP*)
+(14.58333333,OGC-CSW)
+(27.08333333,OAI-PMH)
+(0,FTP)
+(0,SRU 1.1)};
+\addplot coordinates {(0,EPN-TAP)
+(0,ERDDAP)
+(0,OpeNDAP)
+(0,SolR)
+(0,THREDDS)
+(0,Unspecified API)
+(0,via Nesstar)
+(0,REST API)
+(5.263157895,via DataCite)
+(26.31578947,OpenSearch)
+(10.52631579,via EOSDIS)
+(5.263157895,via Geonetwork)
+(0,WAF)
+(0,Web interface)
+(5.263157895,HTTP*)
+(26.31578947,OGC-CSW)
+(10.52631579,OAI-PMH)
+(5.263157895,FTP)
+(5.263157895,SRU 1.1)};
+  \legend{WDS,HMetS}
+  \end{axis}
+\end{tikzpicture}
+\caption{This bar chart compares the mechanisms for metadata exposure (aggregation, discovery, etc.) that were reported by the HMetS-WG repositories with those reported by WDS repositories in a 2019 member survey \parencite[11, 15]{payne_world_2020}. Because some repositories reported serving their metadata \emph{via} third-party services, we have included those services as well (e.g. DataCite, EOSDIS, etc.). \textsuperscript{*}Includes schema.org.}\label{wds-survey}
 \end{figure}
 
 \medskip
@@ -216,25 +308,23 @@ Two of the repositories, SEDAC and IGS, are (at least partially) based in the Un
 As one of NASA’s Distributed Active Archive Centers (DAACs), SEDAC participates actively in initiatives stewarded by the Earth Science Data and Information System (ESDIS) project and SEDAC metadata is provided to NASA’s Earth Observing System (EOS) Common Metadata Repository (CMR). The CMR is the back-end of Earthdata Search, the Global Change Master Directory (GCMD) and the International Data Network (IDN), the latter of which transfers SEDAC metadata into GEOSS. 
 The complete collection of IGS data, which is distributed across data centres, has one of two complete mirrors hosted by a NASA EOSDIS data center, the Crustal Dynamics Data Information System (CDDIS) (the second mirror is hosted by the European Space Agency).\endnote{Since 2018, the European Space Agency (ESA) GNSS Science Support Centre (GSSC), located in Madrid started an initiative to create additional mirrors, in a project that also contemplates a new service platform: the IGS Global Data Centre \parencite{gssc_igs_2021}.} Thus, at present, metadata records for SEDAC datasets and for IGS collections are served in metadata search/retrieval endpoints at the CMR \parencite{noll_cddis_2019}, and they are available in multiple established metadata formats, specifically: DIF 10, ECHO 10, ISO 19115-2:2009 (MENDS and SMAP dialects), and UMM-C \parencite{reiter_cmr_2019}.
 
-\section{Discussion: Challenges}\label{discussion}
-Three main, overarching themes emerged as common sources of the challenges for the group's repositories: changing user needs, sustainability, and evolving technologies (see Fig. \ref{challenges-diagram}).
-
-The first set of challenges reflects repositories' efforts to track and meet the changing needs of the user community, adopting standards that maximize metadata interoperability, with metadata schemas that are widely used, but also versatile and extensible. Serving the needs of data users is one of the main missions of research data repositories, and it is a key indicator of their success. 
+\section{Challenges}\label{discussion}
+The first major theme reflects repositories' efforts to track and meet the changing needs of the user community, adopting standards that maximize metadata interoperability, with metadata schemas that are widely used, but also versatile and extensible. Serving the needs of data users is one of the main missions of research data repositories, and it is a key indicator of their success. 
 
 The second set of challenges refers to the ways in which repositories are limited in terms of opportunities for ensuring the sustainability of their services in light of resource and policy constraints. With limited resources for technical development, repositories have to consider the costs of creating new services and maintaining existing services. 
 
-Third, investment decisions made in a landscape of evolving technologies and changing standards is a significant challenge for repository managers. Repositories must assess the potential of a technology or standard to meet current and future needs, as well as its maturity, to determine whether and when it can be adopted. 
+Third, making investment decisions in a landscape of evolving technologies and changing standards pose a significant challenge for repository managers. Repositories must assess the potential of a technology or standard to meet current and future needs, as well as its maturity, to determine whether and when it can be adopted. 
 
 These areas, or themes, are closely linked to one another: A good understanding of current and emerging trends and user needs can help repositories future-proof their new development efforts, and prevent expensive corrective measures further down the line. 
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\columnwidth]{ChallengesDiagramCartesian.png}
-\caption{Developing repository services, including harvestable metadata, involves choosing and developing technologies that are continuously evolving, in order to serve the changing needs of heterogeneous user groups, within the sustainability challenges, resource constraints and policy frameworks surrounding the repository.} \label{challenges-diagram}
+\includegraphics[width=0.8\columnwidth]{challenges-sorting.png}
+\caption{This image illustrates an intermediate step in the group's analysis of the challenges that were reported in the use cases. Initially, repositories reported nine different types of challenges encountered when creating and delivering data services in general, and metadata services in particular. These statements were synthesized further into larger categories, until three major overarching themes were established: Challenges were associated with changing user needs, ensuring repository sustainability, and developing services in a landscape of evolving technologies. } \label{challenges-sorting}
 \end{figure}
 
 \subsection{Dynamic communities}
-Minimally, a research data repository exists to make a collection of data assets available to a designated community of users. Harvestable metadata catalogues are a key strategy for reaching users, as they can increase traffic to repository holdings. Such catalogues can be especially effective if they are tailored for interoperability with infrastructures (e.g. metacatalogues\endnote{"A metacatalogue is a catalogue that allows for bibliographic searches in multiple catalogues", see \cite{crfcb_metacatalogue_2014} and \cite{elman_making_2020}}) that are highly visible, feature-rich, widely-used, and also themselves integrated within the larger ecosystem of research infrastructures. 
+Minimally, a research data repository exists to make a collection of data assets available to a designated community of users. Harvestable metadata catalogues are a key strategy for reaching users, as they can increase traffic to repository holdings. Such catalogues can be especially effective if they are tailored for interoperability with infrastructures (e.g. metacatalogues\endnote{"A metacatalogue is a catalogue that allows for bibliographic searches in multiple catalogues", see \cite{crfcb_metacatalogue_2014} and \cite{elman_making_2020}.}) that are highly visible, feature-rich, widely-used, and also themselves integrated within the larger ecosystem of research infrastructures. 
 
 \subsubsection{New users, new challenges}
 As a repository shares data more widely, its users become more diverse and heterogeneous. Catering to these evolving user needs is one of the most salient challenges faced by data repositories.
@@ -249,9 +339,7 @@ At IGS, for example, data services are being developed to meet the needs of new 
 \subsubsection{Repository usage metrics and citation counts}
 To some extent, repositories can keep track of their data usage through counters that measure user engagement with repository assets (e.g. clicks, downloads, searches, turnaways), which can help keep track of fluctuations and patterns in a repository’s engagement and usage. A current standard for repository metrics is embodied in the COUNTER Code of Practice \parencite{counter_code_2019}. Some repositories, such as NSSDC and SEDAC employ a simple user authentication requirement, via a single log-in or registration with an e-mail address, to gain insight into data usage patterns beyond raw metrics, shedding light onto the frequency of usage for each item and the types of users who may be accessing data assets. In contrast, GCdataPR reports using IP addresses to keep track of the repository’s international visits, in a way that is consistent with GCdataPR's stated goal of reaching a broader international user base. But, while useful for tracking users' online interactions with the repository, these metrics are not accurate indicators of actual dataset \emph{reuse}. 
 
-Data citation tracking, despite its limitations,\endnote{Citing data is still a relatively new practice, not yet practiced consistently across the research community.For example, one recent study of 12 324 COVID-19-related articles \parencite{zuo_how_2021} reports that 28.5\% provided at least one URL for a dataset that had been (re)used in the article. Although the article does not quantify the difference, it reports that data citation formats were also heterogeneous: some authors provided in-text URLs only, while others gave full bibliographic references.} is increasingly becoming a tool that can be used to estimate the scientific impact of a repository's data assets and facilitate some types of bibliometric analysis of data usage. Among our use cases, GCdataPR, SEDAC and WDC-RRE report tracking data citations. SEDAC’s platform has also implemented a searchable online database that contains references to citations of the repository’s datasets \parencite{sedac_citations_nodate}. 
-
-To discover “hidden” reuses of data, which are unlikely to appear in conventional metrics, alternative metrics like Altmetric \parencite{altmetric_altmetric_2015} or PlumX \parencite{plumx_about_2021} can identify potential mentions in social media and alternative scholarly communication and dissemination platforms \parencite{peters_research_2016}. Adding further identifiers such as ORCiD or ROR (Research Organization Registry) identifiers to dataset-level metadata can also contribute to making this “alternative” impact more straightforward to track.
+Data citation tracking, despite its limitations,\endnote{Citing data is still a relatively new practice, not yet practiced consistently across the research community. For example, one recent study of 12 324 COVID-19-related articles \parencite{zuo_how_2021} reports that 28.5\% provided at least one URL for a dataset that had been (re)used in the article. Although the article does not quantify the difference, it reports that data citation formats were also heterogeneous: some authors provided in-text URLs only, while others gave full bibliographic references.} is increasingly becoming a tool that can be used to estimate the scientific impact of a repository's data assets and facilitate some types of bibliometric analysis of data usage. Among our use cases, GCdataPR, SEDAC and WDC-RRE report tracking data citations. SEDAC’s platform has also implemented a searchable online database that contains references to citations of the repository’s datasets \parencite{sedac_citations_nodate}. 
 
 \subsection{Sustainability}
 Securing long-term support for sustainable repository development and maintenance is a fundamental management challenge, especially for small- and medium-scale research infrastructures. Our group of repositories have faced these challenges in three ways: 1. Gaining support within their host institutions, 2. Finding support through partnerships and 3. Maximizing the return of their technological investment. 
@@ -269,21 +357,24 @@ It is also useful to bear in mind that open-source software (OSS) is being produ
 
 While a discussion of the advantages and disadvantages of OSS lies outside the scope of this paper  \parencite[see][for a discussion of OSS pros and cons]{trappler_is_2009}, it bears mentioning that repository managers will need to weigh any potential benefits of OSS against potential trade-offs (e.g. increased labour costs, community vs. corporate support services, etc.).
 
-\subsubsection{Metadata and data access policies}
-In general, repositories may be hesitant to expose metadata for protected datasets and/or collections. Although none of our repositories reported hosting private or confidential data, some assets in the NSSDC repository are embargoed for a short time period, which is deemed long enough to ensure that data owners’ rights and interests are protected. NSSDC's approach is compatible with the requirement that data be as open as allowable, but as restricted as necessary. SEDAC favours the use of open data licenses (mainly CC BY 4.0\endnote{Creative Commons Attribution 4.0 International, \href{https://creativecommons.org/licenses/by/4.0/}{https://creativecommons.org/licenses/by/4.0/}.}), ``unless there are extenuating circumstances such as data restrictions inherited from input data'' \parencite{sedac_data_2021}. Wherever relevant, necessary consideration must also be given to data sharing principles - beyond FAIR - that address a range of ethical issues, such as the First Nations Principles of OCAP \parencite{fnigc_barriers_2014}, or the CARE Principles for Indigenous Data Governance \parencite{carroll_care_2020}. This means investing in the technical solutions that embody those principles: differentiated access policies and safe storage for datasets, with trusted mechanisms to provide selective access to data with different levels of protection; or authentication mechanisms for eligible users. Machine-readable data licenses in metadata \parencite{creative_commons_creative_2002} can instruct search engines and automated software to display and filter content according to their licensing, which can in turn “remind” users of the freedoms and obligations (e.g. proper attribution) associated with the dataset.
-
 \subsection{Evolving technologies}
 The repositories in this study represent established data-sharing communities that have been sharing scientific data (in analogue and digital formats) long before the advent of the internet. Giving the ever-changing technological landscape, the ``ideal'' constellation of technologies and services may seem like a moving target: Over the past few decades, these repositories have experienced multiple waves of technical innovation, which have time and again transformed the ways in which data is obtained, documented and shared with other researchers. 
 
-\subsubsection{PIDs, DOIs, and identifiers for dynamic datasets}
-New identifiers are beginning to open avenues for automating links between metadata records and creating new services. The growing use of the Research Organization Registry (ROR) identifier in dataset metadata is a case in point. Since implementing ROR tags in 2020, national aggregation platforms like the Federated Research Data Repository (FRDR) have the option to selectively harvest Canadian data from non-Canadian repositories when at least one of the authors is affiliated with a Canadian research organization \parencite{portage_network_dryad_2021}. Also worth mentioning are ORCiD identifiers, which facilitate keeping track of individual researchers' scholarly output.
+\subsubsection{Metadata and data access policies}
+In general, repositories may be hesitant to expose metadata for protected datasets and/or collections. Although none of our repositories reported hosting private or confidential data, some assets in the NSSDC repository are embargoed for a short time period, which is deemed long enough to ensure that data owners’ rights and interests are protected. NSSDC's approach is compatible with the requirement that data be as open as allowable, but as restricted as necessary. SEDAC favours the use of open data licenses (mainly CC BY 4.0\endnote{Creative Commons Attribution 4.0 International, \href{https://creativecommons.org/licenses/by/4.0/}{https://creativecommons.org/licenses/by/4.0/}.}), ``unless there are extenuating circumstances such as data restrictions inherited from input data'' \parencite{sedac_data_2021}. Wherever relevant, necessary consideration must also be given to data sharing principles - beyond FAIR - that address a range of ethical issues, such as the First Nations Principles of OCAP \parencite{fnigc_barriers_2014}, or the CARE Principles for Indigenous Data Governance \parencite{carroll_care_2020}. This means investing in the technical solutions that embody those principles: differentiated access policies and safe storage for datasets, with trusted mechanisms to provide selective access to data with different levels of protection; or authentication mechanisms for eligible users. Machine-readable data licenses in metadata \parencite{creative_commons_creative_2002} can instruct search engines and automated software to display and filter content according to their licensing, which can in turn “remind” users of the freedoms and obligations (e.g. proper attribution) associated with the dataset.
 
- Dataset versioning, and providing permanent identifiers (PIDs) for different versions, is key to safeguarding the reproducibility of shared datasets, when changes occur, such as updates or reprocessing \parencite{klump_versioning_2021}, or when they are republished as smaller extracts or embedded within larger collections (as described in \cite{klump_doi_2016}). Two of the repositories in our use cases, INTERMAGNET and ISGI, reported viewing this as a challenge to sharing non-definitive datasets of geomagnetic observations. Tackling this issue would help these repositories expedite the release of very detailed and highly valuable data assets, making them available sooner to the scientific community. Current initiatives to foster the creation of versioning systems include groups such as DataCite \parencite{datacite_metadata_working_group_datacite_2019} and the Research Data Alliance's (RDA) Data Versioning Working Group \parencite{klump_versioning_2021, klump_compilation_2020}, who have published studies and recommendations on approaches and policies for dataset versioning. Example implementations include one of our use cases: the WDC-RRE repository has implemented a system to assign PIDs to versioned datasets. Project MINTED at Ocean Networks Canada \parencite{jenkyns_minted_2020, jenkyns_making_2019} is another recent and well-documented example of metadata versioning from a WDS Member repository. 
+\subsubsection{PIDs, DOIs, and identifiers for dynamic datasets}
+
+Persistent, unique identifiers (PIDs) for digital objects can enhance and enable a range of interoperability features, from automatic metadata retrieval for bibliographic references in tools like RefWorks and Zotero, to deduplicated aggregation of dataset metadata into federated catalogues, to the analysis and visualization of networks of scholarly communication and collaboration like OpenAIRE's Research Graph \parencite{manghi_openaire_2019}. The Digital Object Identifier (DOI) standard \parencite{paskin_doi_1999}, which emerged in the 1990s, as well as newer PIDs like the Research Organization Registry (ROR)\endnote{Research Organization Registry, \href{https://ror.org/about/}{https://ror.org/about/}.} and Open Researcher and Contributor IDs (ORCiD)\endnote{Open Researcher and Contributor ID, \href{https://info.orcid.org/what-is-orcid/}{https://info.orcid.org/what-is-orcid/}.} have opened new avenues for automating links between metadata records, and for creating new digital research services. The growing use of the ROR identifier in dataset metadata is a case in point. Since implementing ROR tags in 2020, national aggregation platforms like the Federated Research Data Repository (FRDR) have the option to selectively harvest Canadian data from non-Canadian repositories when at least one of the authors is affiliated with a Canadian research organization \parencite{portage_network_dryad_2021}. Similarly, ORCiDs make it easier for individual researchers to track their own scholarly output.
+
+The ability to permanently and uniquely reference arbitrary data subsets and subsequent versions of a dataset is key to safeguarding the reproducibility of scientific studies that rely on shared data. To tackle the technical challenge involved, groups such as DataCite \parencite{datacite_metadata_working_group_datacite_2019} and the Research Data Alliance's (RDA) Data Versioning Working Group \parencite{klump_versioning_2021, klump_compilation_2020} have developed approaches and recommendations to implement dataset versioning and dynamic data citation. In 2015 the latter group released a RDA recommendation describing the dynamic assignment of PIDs to every new, unique data query that produced a given data subset \parencite{rauber_data_citation_2015}. This way, when a dataset changes due to updates or reprocessing \parencite{klump_versioning_2021}, or when a subset of data is extracted from a larger dataset, or republished within a larger data collection (as described in \cite{klump_doi_2016}), these unique products can themselves be reconstructed identified, referenced, cited and reused.
+
+Of our present set of use cases, only the WDC-RRE repository reported having already implemented a system to assign PIDs to versioned datasets \parencite{institute_of_geographic_2016}, in which identifiers are coded to refer back to data queries executed on specific, time-stamped dataset versions. Two others, INTERMAGNET and ISGI, expressed an interest in developing a PID versioning system in future stages of their repositories' development. This approach would expedite the release of non-definitive datasets of geomagnetic observationsm, making these very detailed and highly valuable data assets available sooner to the scientific community. Another recent and well-documented example of metadata versioning from a WDS Member repository is Project MINTED at Ocean Networks Canada \parencite{jenkyns_minted_2020, jenkyns_making_2019}, who also had an active role in developing the RDA's Data Versioning WG's outputs.
 
 \subsubsection{Maximizing data asset potential: Two approaches}
 To determine how much an existing repository infrastructure can achieve, and to pursue new development opportunities accordingly, an ongoing and thorough assessment of a repository’s infrastructure is recommended. To support a repository's initial self-assessment, the global RDM community has produced instruments to assess the maturity and trustworthiness of a data repository and the data assets, including metadata records, it contains \parencite{downs_improving_2021, peng_state_2018}. Some practical, up-to-date frameworks for reviewing a repository’s current state are the most recent version of the CoreTrustSeal requirements for trustworthy data repositories \parencite{coretrustseal_coretrustseal_2019}, the RDA’s new FAIR data maturity model \parencite{fair_data_maturity_model_wg_fair_2020}, the CARE Principles for Indigenous Data Governance \parencite{carroll_care_2020}, and the TRUST Principles for digital repositories \parencite{lin_trust_2020}. The data repositories also need to continually assess the technology landscape to identify opportunities for improving capabilities to serve their designated communities. Cooperating with other repositories, within and across disciplines, helps with such assessments, especially when cooperating repositories share adoption stories and lessons-learned.
 
-Two cases in our study reflect an interplay between changing user needs, evolving technologies, and resource constraints.  Two geomagnetism data repositories, INTERMAGNET and ISGI, contain data assets with enormous potential for innovative, interdisciplinary research, but whose metadata formats and services have not been updated to current standards. For each repository, the challenge lies in finding a strategy that will allow them to exploit their data's potential to serve their current (known) users as well as future (known and unknown) ones. It involves optimizing between general and use-case based repository developments, including metadata standards and exchange protocols. ISGI and INTERMAGNET have reported different strategies, based on different priorities, to respond to this challenge. INTERMAGNET has reported having to ponder the advantages of general-purpose, extensive standards that can open future (yet unknown) avenues of research and collaboration, versus use-case based approaches that tailor new developments to better support each new case. In contrast, the existence of concrete opportunities for interdisciplinary collaboration for example, between ISGI and researchers in the biological sciences—may justify an approach that tailors a repository\'’s developments to a set of concrete use cases, taking a chance on their potential for future extensibility. HMetS-WG repositories also recognize the tension between the two fundamental principles of investing in future-proof technologies or maximizing user engagement with the data over time. In practice, repositories will usually attempt to balance both principles when designing their development plans.
+Two cases in our study reflect an interplay between changing user needs, evolving technologies, and resource constraints.  Two geomagnetism data repositories, INTERMAGNET and ISGI, contain data assets with enormous potential for innovative, interdisciplinary research, but whose metadata formats and services have not been updated to current standards. For each repository, the challenge lies in finding a strategy that will allow them to exploit their data's potential to serve their current (known) users as well as future (known and unknown) ones. It involves optimizing between general and use-case based repository developments, including metadata standards and exchange protocols. ISGI and INTERMAGNET have reported different strategies, based on different priorities, to respond to this challenge. INTERMAGNET has reported having to ponder the advantages of general-purpose, extensive standards that can open future (yet unknown) avenues of research and collaboration, versus use-case based approaches that tailor new developments to better support each new case. In contrast, the existence of concrete opportunities for interdisciplinary collaboration for example, between ISGI and researchers in the biological sciences—may justify an approach that tailors a repository's developments to a set of concrete use cases, taking a chance on their potential for future extensibility. HMetS-WG repositories also recognize the tension between the two fundamental principles of investing in future-proof technologies or maximizing user engagement with the data over time. In practice, repositories will usually attempt to balance both principles when designing their development plans.
 
 \subsubsection{Limitations of a harvesting strategy for dataset discovery.}
 In many of the cases described in these reports, the development strategy for harvestable metadata services has been very thorough. To varying degrees, the SEDAC, WDC-RRE and GCdataPR use cases hint at the limits of a discovery/findability strategy based on harvestable metadata services alone. These repositories, in particular, have motivated the ITO’s decision to create an inventory of metadata aggregation services \parencite{li_searchable_2021} that will allow repository managers to find aggregators outside their community’s beaten path. Furthermore, and as mentioned above, motivated in part by inclusion in Google Dataset Search, SEDAC has a metadata harvesting capability already underway. WDC-RRE and GCdataPR have expressed future interest in receiving ITO support to develop a semantic metadata strategy as well.
@@ -318,7 +409,8 @@ This work represents the perspectives of the authors and does not necessarily re
 
 %An unnumbered section, e.g.\ \verb"\section*{Funding}", may be used for grant details, etc.\ if required and included \emph{in the non-anonymous version} before any Notes or References.
 Support for the Harvestable Metadata Services Group was funded by the Digital Research Alliance of Canada (formerly New Digital Research Infrastructure Organization, NDRIO) under Collaborative agreement number 51387-5032. 
-The contributions of Robert R. Downs were supported by the National Aeronautics and Space Administration under Contract 80GSFC18C0111 for the Socioeconomic Data and Applications Distributed Active Archive Center (DAAC).
+A portion of the contributions of Alicia Urquidi Diaz was made possible by Scholars Portal of the Ontario Council of University Libraries (OCUL).
+The contributions of Robert R. Downs were supported by the National Aeronautics and Space Administration under Contract 80GSFC18C0111 for the Socioeconomic Data and Applications Distributed Active Archive Center (DAAC). 
 The paper's publication was supported by the Global Change Data Publishing and Repository (GCdataPR).
 
 %\section*{Notes on contributor(s)}\label{contrib-notes}
